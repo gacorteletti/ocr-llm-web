@@ -12,18 +12,18 @@ model User {
   email String @unique
   hash  String //hash of the password
 
-  documents Document[]
+  documents Document[] // one-to-many
 
   @@map("users")
 }
 
 model Document {
-  id Int @id @default(autoincrement())
-
-  title String
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  filename  String
+  path      String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 
   @@map("documents")
 }
