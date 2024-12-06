@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import API from "../../lib/api";
 import Link from "next/link";
+import Button from "./Button";
 
 interface AuthFormProps {
   type: "signin" | "signup"; // define form type
@@ -29,13 +30,11 @@ export default function AuthForm({
     e.preventDefault();
     try {
       const response = await API.post(endpoint, { email, password });
-      console.log("Signup successful:", response.data); // Debug success
       if (type === "signin") {
         localStorage.setItem("token", response.data.access_token); // Save JWT for signin
       }
       router.push(redirectTo); // Redirect on success
     } catch (err: any) {
-      console.error("Signup error:", err.response?.data || err.message); // Log the actual error
       setError(err.response?.data?.message || `${type} failed`);
     }
   };
@@ -68,12 +67,9 @@ export default function AuthForm({
           className="w-full p-2 border border-gray-300 rounded mb-4 text-black"
           required
         />
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-950"
-        >
+        <Button type="submit" className="w-full">
           {type === "signin" ? "ENTER" : "CREATE"}
-        </button>
+        </Button>
         {linkText && linkHref && (
           <Link
             href={linkHref}
