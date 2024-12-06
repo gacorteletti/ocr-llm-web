@@ -19,7 +19,7 @@ import { extname } from 'path';
       }),
       fileFilter: (req, file, callback) => {
         // filter to accept only images files
-        const allowedTypes = ['image/jpeg', 'image/png'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
         if (allowedTypes.includes(file.mimetype)) {
           callback(null, true);
         } else {
