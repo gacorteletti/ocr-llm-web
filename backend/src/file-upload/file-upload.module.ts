@@ -17,6 +17,18 @@ import { extname } from 'path';
           callback(null, `${cleanName}-${uniqueSuffix}${fileExt}`);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        // filter to accept only images files
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (allowedTypes.includes(file.mimetype)) {
+          callback(null, true);
+        } else {
+          callback(
+            new Error('Invalid file type. Only JPEG and PNG are allowed.'),
+            false,
+          );
+        }
+      },
     }),
   ],
   exports: [MulterModule],

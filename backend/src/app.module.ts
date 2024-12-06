@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { DocumentModule } from './document/document.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { OcrProcessingModule } from './ocr-processing/ocr-processing.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
     DocumentModule,
     PrismaModule,
     FileUploadModule,
+    OcrProcessingModule,
   ],
 })
 export class AppModule {}

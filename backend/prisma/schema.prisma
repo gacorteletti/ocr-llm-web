@@ -18,12 +18,13 @@ model User {
 }
 
 model Document {
-  id        Int      @id @default(autoincrement())
-  filename  String
-  path      String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  filename      String
+  path          String
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  extractedText String?
+  createdAt     DateTime @default(now())
 
   @@map("documents")
 }
