@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 interface ButtonProps {
   type?: "button" | "submit";
   onClick?: () => void; // optional click handler
