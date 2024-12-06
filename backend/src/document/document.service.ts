@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { OcrProcessingService } from '../ocr-processing/ocr-processing.service';
 import { LlmService } from '../llm/llm.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DocumentService {
@@ -9,10 +10,11 @@ export class DocumentService {
     private prisma: PrismaService,
     private ocrProcessing: OcrProcessingService,
     private llm: LlmService,
+    private config: ConfigService,
   ) {}
 
   async getDocumentsByUser(userId: number) {
-    return this.prisma.document.findMany({
+    const documents = await this.prisma.document.findMany({
       where: { userId },
       select: {
         id: true,
@@ -22,6 +24,12 @@ export class DocumentService {
         extractedText: true,
       },
     });
+    // append file url for frontend visualization
+    const BE_url = this.config.get('BACKEND_URL');
+    return documents.map((doc) => ({
+      ...doc,
+      url: `${BE_url}/uploads/${doc.filename}`,
+    }));
   }
 
   async saveDocument(file: Express.Multer.File, userId: number) {

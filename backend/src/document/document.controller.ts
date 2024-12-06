@@ -20,7 +20,7 @@ export class DocumentController {
   constructor(private documentService: DocumentService) {}
 
   @UseGuards(JwtGuard)
-  @Get()
+  @Get() // .../documents for grid of user's documents
   async getUserDocuments(@GetUser() user: User) {
     return this.documentService.getDocumentsByUser(user.id);
   }
