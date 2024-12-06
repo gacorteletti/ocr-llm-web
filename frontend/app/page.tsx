@@ -12,7 +12,7 @@ export default function LandingPage() {
           picture of the document you desire, and begin chatting with our AI
           assistant about your document.
         </p>
-        <div className="flex flex-col gap-4">
+        <div className="text flex-col gap-4">
           <Link
             href="/signup"
             className="py-2 px-4 font-semibold rounded bg-blue-500 text-white hover:bg-blue-600 text-center"

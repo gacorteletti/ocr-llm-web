@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpException, HttpStatus, Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -24,7 +24,10 @@ import { extname } from 'path';
           callback(null, true);
         } else {
           callback(
-            new Error('Invalid file type. Only JPEG and PNG are allowed.'),
+            new HttpException(
+              'Invalid file type. Only JPEG, JPG and PNG image files are allowed.',
+              HttpStatus.BAD_REQUEST,
+            ),
             false,
           );
         }
