@@ -34,7 +34,7 @@ export default function UploadForm() {
 
     try {
       // post request with auth token
-      await API.post("/document/upload", formData, {
+      await API.post("/documents/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -11,6 +11,19 @@ export class DocumentService {
     private llm: LlmService,
   ) {}
 
+  async getDocumentsByUser(userId: number) {
+    return this.prisma.document.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        filename: true,
+        path: true,
+        createdAt: true,
+        extractedText: true,
+      },
+    });
+  }
+
   async saveDocument(file: Express.Multer.File, userId: number) {
     // Perform OCR processing
     const extractedText = await this.ocrProcessing.extractText(file.path);

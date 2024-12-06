@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Post,
   UploadedFile,
@@ -14,9 +15,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { GetUser } from '../auth/decorator';
 import { User } from '@prisma/client';
 
-@Controller('document')
+@Controller('documents')
 export class DocumentController {
   constructor(private documentService: DocumentService) {}
+
+  @UseGuards(JwtGuard)
+  @Get()
+  async getUserDocuments(@GetUser() user: User) {
+    return this.documentService.getDocumentsByUser(user.id);
+  }
 
   @UseGuards(JwtGuard) // protect route with custom guard
   @Post('upload')
