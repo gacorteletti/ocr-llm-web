@@ -1,6 +1,8 @@
 import {
   BadRequestException,
+  Body,
   Controller,
+  Param,
   Post,
   Req,
   UploadedFile,
@@ -27,5 +29,18 @@ export class DocumentController {
     }
     const userId = req.user.id; // get user id
     return this.documentService.saveDocument(file, userId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post(':id/analyze')
+  async analyzeDocument(
+    @Param('id') id: string,
+    @Body('query') query: string,
+  ): Promise<{ response: string }> {
+    const response = await this.documentService.interactWithExtractedText(
+      +id,
+      query,
+    );
+    return { response };
   }
 }

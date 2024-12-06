@@ -17,14 +17,24 @@ model User {
   @@map("users")
 }
 
+model Interaction {
+  id         Int      @id @default(autoincrement())
+  documentId Int // Link to the document
+  document   Document @relation(fields: [documentId], references: [id])
+  query      String // The user's query
+  response   String // The LLM's response
+  createdAt  DateTime @default(now()) // Timestamp
+}
+
 model Document {
-  id            Int      @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   filename      String
   path          String
   userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-  extractedText String?
-  createdAt     DateTime @default(now())
+  user          User          @relation(fields: [userId], references: [id])
+  extractedText String? // Extracted text from OCR
+  interactions  Interaction[] // Logs of LLM interactions
+  createdAt     DateTime      @default(now())
 
   @@map("documents")
 }
