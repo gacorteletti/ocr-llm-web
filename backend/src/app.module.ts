@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { OcrProcessingModule } from './ocr-processing/ocr-processing.module';
 import { LlmModule } from './llm/llm.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -19,5 +21,7 @@ import { LlmModule } from './llm/llm.module';
     OcrProcessingModule,
     LlmModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
