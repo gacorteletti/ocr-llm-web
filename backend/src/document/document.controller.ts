@@ -4,7 +4,6 @@ import {
   Controller,
   Param,
   Post,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -12,6 +11,8 @@ import {
 import { DocumentService } from './document.service';
 import { JwtGuard } from '../auth/guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetUser } from '../auth/decorator';
+import { User } from '@prisma/client';
 
 @Controller('document')
 export class DocumentController {
@@ -22,13 +23,12 @@ export class DocumentController {
   @UseInterceptors(FileInterceptor('file')) // handle single file upload
   async uploadDocument(
     @UploadedFile() file: Express.Multer.File,
-    @Req() req: any, // automatically calls JwtStrategy.validate
+    @GetUser() user: User, // automatically calls JwtStrategy.validate
   ) {
     if (!file) {
       throw new BadRequestException('No file provided'); // Throw an error if file is undefined
     }
-    const userId = req.user.id; // get user id
-    return this.documentService.saveDocument(file, userId);
+    return this.documentService.saveDocument(file, user.id);
   }
 
   @UseGuards(JwtGuard)
@@ -36,10 +36,12 @@ export class DocumentController {
   async analyzeDocument(
     @Param('id') id: string,
     @Body('query') query: string,
+    @GetUser() user: User, // extract user info from JWT
   ): Promise<{ response: string }> {
     const response = await this.documentService.interactWithExtractedText(
       +id,
       query,
+      user.id,
     );
     return { response };
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { OcrProcessingService } from '../ocr-processing/ocr-processing.service';
 import { LlmService } from '../llm/llm.service';
@@ -33,6 +33,7 @@ export class DocumentService {
   async interactWithExtractedText(
     documentId: number,
     query: string,
+    userId: number,
   ): Promise<string> {
     const document = await this.prisma.document.findUnique({
       where: { id: documentId },
@@ -40,6 +41,13 @@ export class DocumentService {
 
     if (!document) {
       throw new Error('Document not found');
+    }
+
+    // check ownership
+    if (document.userId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to access this document',
+      );
     }
 
     const prompt = `Analyze the following text:\n\n"${document.extractedText}"\n\nQuery: ${query}`;
