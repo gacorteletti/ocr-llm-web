@@ -52,13 +52,19 @@ export class DocumentService {
   private formatDocumentText(
     extractedText: string,
     interactions: Array<{ query: string; response: string }>,
+    lineWidth = 80,
   ): string {
-    let content = `-> EXTRACTED TEXT\n\n${extractedText}\n\n`;
+    const wrapText = (text: string, width: number): string => {
+      const regex = new RegExp(`(.{1,${width}})(\\s+|$)`, 'g');
+      return text.match(regex)?.join('\n') ?? text;
+    };
+
+    let content = `-> EXTRACTED TEXT\n\n${wrapText(extractedText, lineWidth)}\n\n`;
     content += `-------------------------------------------------------------------------------------\n\n`;
 
     interactions.forEach((interaction) => {
-      content += `-> QUERY\n\n${interaction.query}\n\n`;
-      content += `-> REPLY\n\n${interaction.response}\n\n`;
+      content += `-> QUERY\n\n${wrapText(interaction.query, lineWidth)}\n\n`;
+      content += `-> REPLY\n\n${wrapText(interaction.response, lineWidth)}\n\n`;
       content += `-------------------------------------------------------------------------------------\n\n`;
     });
 

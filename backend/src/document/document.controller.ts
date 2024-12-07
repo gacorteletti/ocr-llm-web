@@ -66,7 +66,6 @@ export class DocumentController {
     res.set({
       'Content-Type': 'application/zip',
       'Content-Disposition': `attachment; filename=${zipFileName}`,
-      'Content-Length': zipBuffer.length,
     });
 
     res.send(zipBuffer);

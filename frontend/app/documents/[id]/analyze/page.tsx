@@ -20,7 +20,7 @@ interface Message {
 
 export default function AnalyzePage() {
   const { id } = useParams(); // fetch doc ID from URL path
-  const [document, setDocument] = useState<Document | null>(null);
+  const [doc, setDoc] = useState<Document | null>(null);
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,6 +55,32 @@ export default function AnalyzePage() {
     }
   };
 
+  const handleDownload = async (e: React.MouseEvent) => {
+    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/download/${id}`;
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(backendUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to download the file");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "";
+      anchor.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download error:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchDocumentAndInteractions = async () => {
       try {
@@ -64,7 +90,7 @@ export default function AnalyzePage() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setDocument(docResult.data);
+        setDoc(docResult.data);
 
         // Get interactions with this document
         const interactionsResult = await API.get(
@@ -130,7 +156,7 @@ export default function AnalyzePage() {
     }
   };
 
-  if (!document) {
+  if (!doc) {
     return <p>Loading document details...</p>;
   }
 
@@ -142,28 +168,26 @@ export default function AnalyzePage() {
           <TransformWrapper>
             <TransformComponent>
               <img
-                src={document.url}
-                alt={document.filename}
+                src={doc.url}
+                alt={doc.filename}
                 className="w-full h-full object-contain"
               />
             </TransformComponent>
           </TransformWrapper>
         </div>
-        <div className="flex justify-between mt-2">
+        <div className="flex justify-between">
           <button
             onClick={handleDelete}
-            className="text-red-500 text-3xl hover:text-red-700"
+            className="text-red-500 ml-5 text-6xl hover:text-red-700"
           >
             ✖
           </button>
-          <Button
-            className="text-blue-500"
-            onClick={() => {
-              /* download */
-            }}
+          <button
+            onClick={handleDownload}
+            className="text-blue-500 mr-5 text-7xl hover:text-blue-700"
           >
-            Download
-          </Button>
+            ⬇
+          </button>
         </div>
       </div>
 
@@ -178,7 +202,7 @@ export default function AnalyzePage() {
             className="text-black overflow-y-scroll"
             style={{ maxHeight: "150px" }}
           >
-            {document.extractedText}
+            {doc.extractedText}
           </div>
         </div>
 

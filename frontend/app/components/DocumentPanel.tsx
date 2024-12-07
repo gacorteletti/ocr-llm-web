@@ -41,11 +41,8 @@ export default function DocumentPanel({
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const anchor = document.createElement("a");
-      const zipFilename = `${
-        filename.split(".").slice(0, -1).join(".") || filename
-      }.zip`;
       anchor.href = url;
-      anchor.download = zipFilename;
+      anchor.download = "";
       anchor.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
