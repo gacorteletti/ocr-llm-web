@@ -26,6 +26,20 @@ import * as fs from 'fs/promises';
 export class DocumentController {
   constructor(private documentService: DocumentService) {}
 
+  @Get(':id')
+  async getDocumentById(@Param('id') id: string, @GetUser() user: User) {
+    const document = await this.documentService.getDocumentByIdAndUser(
+      parseInt(id, 10),
+      user.id,
+    );
+
+    if (!document) {
+      throw new UnauthorizedException('Access denied.');
+    }
+
+    return document;
+  }
+
   @Delete(':id')
   async deleteDocument(@Param('id') id: string, @GetUser() user: User) {
     const document = await this.documentService.getDocumentByIdAndUser(
