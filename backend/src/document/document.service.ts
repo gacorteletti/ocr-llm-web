@@ -13,6 +13,12 @@ export class DocumentService {
     private config: ConfigService,
   ) {}
 
+  async getDocumentByIdAndUser(id: number, userId: number) {
+    return this.prisma.document.findFirst({
+      where: { id, userId },
+    });
+  }
+
   async getDocumentsByUser(userId: number) {
     const documents = await this.prisma.document.findMany({
       where: { userId },
@@ -45,10 +51,7 @@ export class DocumentService {
         extractedText, // append ocr extracted text
       },
     });
-    return {
-      msg: 'File uploaded succesfully',
-      document,
-    };
+    return { msg: 'File uploaded succesfully', document };
   }
 
   async interactWithExtractedText(
