@@ -3,6 +3,8 @@
 import DocumentPanel from "../components/DocumentPanel";
 import API from "../../lib/api";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Button from "../components/Button";
 
 interface Document {
   id: number;
@@ -14,10 +16,13 @@ interface Document {
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
+        setLoading(true);
         const response = await API.get("/documents", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -26,6 +31,8 @@ export default function DocumentsPage() {
         setDocuments(response.data);
       } catch (err: any) {
         setError("Failed to fetch documents.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -43,13 +50,16 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col items-center">
       <h1 className="text-6xl text-white text-center font-bold mb-4">
         YOUR DOCUMENTS
       </h1>
+      <Button onClick={() => router.push("/documents/upload")} className="mb-4">
+        Upload Document
+      </Button>
       {documents.length === 0 ? (
         <p className="text-white text-2xl text-center">
-          No files uploaded yet.
+          {loading ? "Loading your files..." : "No files uploaded yet."}
         </p>
       ) : (
         <div className="grid grid-cols-3 gap-4">
