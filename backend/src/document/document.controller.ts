@@ -42,6 +42,15 @@ export class DocumentController {
       console.error(`Error deleting file: ${filePath}`, err);
     });
 
+    const processedFilePath = join(
+      process.cwd(),
+      'processed_uploads',
+      `processed_${document.filename}`,
+    );
+    await fs.unlink(processedFilePath).catch((err) => {
+      console.error(`Error deleting processed file: ${processedFilePath}`, err);
+    });
+
     await this.documentService.deleteDocumentById(parseInt(id, 10));
     return { message: 'Document deleted successfully.' };
   }
