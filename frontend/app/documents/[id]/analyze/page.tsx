@@ -182,9 +182,22 @@ export default function AnalyzePage() {
           >
             ✖
           </button>
+          <Button
+            onClick={() => router.push("/documents/upload")}
+            className="mb-4 mt-4"
+          >
+            New Upload
+          </Button>
+          <Button
+            onClick={() => router.push("/documents")}
+            className="mb-4 mt-4"
+          >
+            Return
+          </Button>
+
           <button
             onClick={handleDownload}
-            className="text-blue-500 mr-5 text-7xl hover:text-blue-700"
+            className="text-blue-500 mr-5 text-8xl hover:text-blue-700"
           >
             ⬇
           </button>

@@ -73,9 +73,17 @@ export default function UploadForm() {
           required
         />
       </div>
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "UPLOADING..." : "UPLOAD"}
-      </Button>
+      <div className="flex justify-between items-center space-x-4">
+        <Button type="submit" disabled={loading} className="flex-grow w-2/3">
+          {loading ? "UPLOADING..." : "UPLOAD"}
+        </Button>
+        <Button
+          onClick={() => router.push("/documents")}
+          className="bg-gray-500 hover:bg-gray-400"
+        >
+          Return
+        </Button>
+      </div>
     </form>
   );
 }
