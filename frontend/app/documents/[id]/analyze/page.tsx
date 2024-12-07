@@ -78,8 +78,9 @@ export default function AnalyzePage() {
     if (!query.trim()) return; // if query empty, skip it
 
     const newMessage: Message = { role: "user", content: query }; // obtain new query
-    setMessages((prev) => [...prev, newMessage]); // append to chat
+    setMessages((prev) => [...prev, newMessage]); // append to history
 
+    setQuery(""); // clear chat input
     setLoading(true);
 
     try {
