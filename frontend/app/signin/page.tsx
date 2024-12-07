@@ -5,7 +5,7 @@ export default function SigninPage() {
     <AuthForm
       type="signin"
       endpoint="/auth/signin"
-      redirectTo="/dashboard"
+      redirectTo="/documents"
       linkText="Don't have an account?"
       linkHref="/signup"
     />

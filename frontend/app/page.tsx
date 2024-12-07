@@ -15,13 +15,13 @@ export default function LandingPage() {
         <div className="text flex-col gap-4">
           <Link
             href="/signup"
-            className="py-2 px-4 font-semibold rounded bg-blue-500 text-white hover:bg-blue-600 text-center"
+            className="py-2 px-4 mr-2 font-semibold rounded bg-blue-500 text-white hover:bg-blue-600 text-center"
           >
             Create an Account
           </Link>
           <Link
             href="/signin"
-            className="py-2 px-4 font-semibold rounded bg-gray-200 text-gray-800 hover:bg-gray-300 text-center"
+            className="py-2 px-4 ml-2 font-semibold rounded bg-gray-200 text-gray-800 hover:bg-gray-300 text-center"
           >
             Sign In
           </Link>
