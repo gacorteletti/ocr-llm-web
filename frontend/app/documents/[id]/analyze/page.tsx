@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import API from "../../../../lib/api";
 import { useParams } from "next/navigation";
 import Button from "../../../components/Button";
@@ -24,6 +24,8 @@ export default function AnalyzePage() {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat (for auto-scroll)
 
   useEffect(() => {
     const fetchDocumentAndInteractions = async () => {
@@ -61,6 +63,14 @@ export default function AnalyzePage() {
 
     fetchDocumentAndInteractions();
   }, [id]);
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleQuerySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,6 +160,7 @@ export default function AnalyzePage() {
           <div
             className="flex-grow overflow-y-auto mb-4 text-black"
             style={{ maxHeight: "300px" }}
+            ref={chatContainerRef}
           >
             <h2 className="text-md text-center text-black font-bold mb-1">
               AI CHAT
