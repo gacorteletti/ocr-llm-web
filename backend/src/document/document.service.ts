@@ -3,6 +3,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { OcrProcessingService } from '../ocr-processing/ocr-processing.service';
 import { LlmService } from '../llm/llm.service';
 import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as AdmZip from 'adm-zip';
 
 @Injectable()
 export class DocumentService {
@@ -12,6 +15,55 @@ export class DocumentService {
     private llm: LlmService,
     private config: ConfigService,
   ) {}
+
+  async createDocumentZip(documentId: number): Promise<Buffer> {
+    const document = await this.prisma.document.findUnique({
+      where: { id: documentId },
+      include: { interactions: true },
+    });
+
+    if (!document) {
+      throw new Error('Document not found');
+    }
+
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const originalFilePath = path.join(uploadsDir, document.filename);
+
+    const zip = new AdmZip();
+
+    if (fs.existsSync(originalFilePath)) {
+      zip.addLocalFile(originalFilePath);
+    }
+
+    // Create formatted txt file with text and interactions
+    const textContent = this.formatDocumentText(
+      document.extractedText || 'No extracted text available.',
+      document.interactions,
+    );
+
+    // Add the text file to the ZIP
+    const textFileName = 'ExtractedText_and_Interactions.txt';
+    zip.addFile(textFileName, Buffer.from(textContent, 'utf-8'));
+
+    // Return the ZIP file as a buffer
+    return zip.toBuffer();
+  }
+
+  private formatDocumentText(
+    extractedText: string,
+    interactions: Array<{ query: string; response: string }>,
+  ): string {
+    let content = `-> EXTRACTED TEXT\n\n${extractedText}\n\n`;
+    content += `-------------------------------------------------------------------------------------\n\n`;
+
+    interactions.forEach((interaction) => {
+      content += `-> QUERY\n\n${interaction.query}\n\n`;
+      content += `-> REPLY\n\n${interaction.response}\n\n`;
+      content += `-------------------------------------------------------------------------------------\n\n`;
+    });
+
+    return content.trim();
+  }
 
   async getInteractionsByDocumentId(documentId: number) {
     return this.prisma.interaction.findMany({

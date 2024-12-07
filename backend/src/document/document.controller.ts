@@ -60,8 +60,16 @@ export class DocumentController {
       throw new UnauthorizedException('Access denied.');
     }
 
-    const filePath = join(process.cwd(), document.path);
-    return res.download(filePath, document.filename); // triggers file download
+    const zipBuffer = await this.documentService.createDocumentZip(document.id);
+    const zipFileName = '`${path.parse(document.filename).name}.zip`';
+
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename=${zipFileName}`,
+      'Content-Length': zipBuffer.length,
+    });
+
+    res.send(zipBuffer);
   }
 
   @Get(':id/interactions')
