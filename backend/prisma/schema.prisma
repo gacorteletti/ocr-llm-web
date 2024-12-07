@@ -20,7 +20,7 @@ model User {
 model Interaction {
   id         Int      @id @default(autoincrement())
   documentId Int // Link to the document
-  document   Document @relation(fields: [documentId], references: [id])
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   query      String // The user's query
   response   String // The LLM's response
   createdAt  DateTime @default(now()) // Timestamp

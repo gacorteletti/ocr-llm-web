@@ -1,13 +1,21 @@
-import { HttpException, HttpStatus, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
+import * as fs from 'fs';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Module({
   imports: [
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads',
+        destination: (req, file, callback) => {
+          const uploadDir = './uploads';
+          if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+          }
+          callback(null, uploadDir);
+        },
         filename: (req, file, callback) => {
           const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const fileExt = extname(file.originalname);
@@ -17,8 +25,8 @@ import { extname } from 'path';
           callback(null, `${cleanName}-${uniqueSuffix}${fileExt}`);
         },
       }),
+
       fileFilter: (req, file, callback) => {
-        // filter to accept only images files
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
         if (allowedTypes.includes(file.mimetype)) {
           callback(null, true);
