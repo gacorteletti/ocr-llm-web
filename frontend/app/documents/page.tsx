@@ -4,8 +4,15 @@ import DocumentPanel from "../components/DocumentPanel";
 import API from "../../lib/api";
 import { useEffect, useState } from "react";
 
+interface Document {
+  id: number;
+  filename: string;
+  url: string;
+  createdAt: string;
+}
+
 export default function DocumentsPage() {
-  const [documents, setDocuments] = useState([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,6 +32,12 @@ export default function DocumentsPage() {
     fetchDocuments();
   }, []);
 
+  const handleDelete = (id: number) => {
+    setDocuments((prevDocuments) =>
+      prevDocuments.filter((doc) => doc.id !== id)
+    );
+  };
+
   if (error) {
     return <p className="text-red-500">{error}</p>;
   }
@@ -35,7 +48,9 @@ export default function DocumentsPage() {
         YOUR DOCUMENTS
       </h1>
       {documents.length === 0 ? (
-        <p>No documents uploaded yet.</p>
+        <p className="text-white text-2xl text-center">
+          No files uploaded yet.
+        </p>
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {documents.map((doc: any) => (
@@ -45,6 +60,7 @@ export default function DocumentsPage() {
               filename={doc.filename}
               url={doc.url}
               createdAt={doc.createdAt}
+              onDelete={handleDelete}
             />
           ))}
         </div>

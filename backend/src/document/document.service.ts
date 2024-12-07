@@ -13,6 +13,12 @@ export class DocumentService {
     private config: ConfigService,
   ) {}
 
+  async deleteDocumentById(id: number) {
+    return this.prisma.document.delete({
+      where: { id },
+    });
+  }
+
   async getDocumentByIdAndUser(id: number, userId: number) {
     return this.prisma.document.findFirst({
       where: { id, userId },

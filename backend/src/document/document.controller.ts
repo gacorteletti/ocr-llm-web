@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -18,11 +19,32 @@ import { GetUser } from '../auth/decorator';
 import { Response } from 'express';
 import { User } from '@prisma/client';
 import { join } from 'path';
+import * as fs from 'fs/promises';
 
 @UseGuards(JwtGuard)
 @Controller('documents')
 export class DocumentController {
   constructor(private documentService: DocumentService) {}
+
+  @Delete(':id')
+  async deleteDocument(@Param('id') id: string, @GetUser() user: User) {
+    const document = await this.documentService.getDocumentByIdAndUser(
+      parseInt(id, 10),
+      user.id,
+    );
+
+    if (!document) {
+      throw new UnauthorizedException('Access denied.');
+    }
+
+    const filePath = join(process.cwd(), document.path);
+    await fs.unlink(filePath).catch((err) => {
+      console.error(`Error deleting file: ${filePath}`, err);
+    });
+
+    await this.documentService.deleteDocumentById(parseInt(id, 10));
+    return { message: 'Document deleted successfully.' };
+  }
 
   @Get('download/:id')
   async downloadDocument(

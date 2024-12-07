@@ -7,12 +7,14 @@ interface DocumentPanelProps {
   filename: string;
   url: string;
   createdAt: string;
+  onDelete: (id: number) => void;
 }
 
 export default function DocumentPanel({
   id,
   filename,
   url,
+  onDelete,
 }: DocumentPanelProps) {
   const router = useRouter();
 
@@ -48,10 +50,35 @@ export default function DocumentPanel({
     }
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); // prevent triggering the analyze logic
-    alert("Delete functionality coming soon!");
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this document?"
+    );
+    if (!confirmed) return;
+
+    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${id}`;
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(backendUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the document");
+      }
+
+      onDelete(id); // notify parent to remove document from grid
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
   };
+
   return (
     <div
       className="flex flex-col justify-between bg-white border-4 border-gray-400 shadow-2xl rounded-xl p-4 hover:shadow-black cursor-pointer transition-all"
