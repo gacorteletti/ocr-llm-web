@@ -128,7 +128,10 @@ export default function AnalyzePage() {
 
         {/* ai */}
         <div className="flex-grow flex flex-col bg-white shadow-md rounded p-4">
-          <div className="flex-grow overflow-y-auto mb-4 text-black">
+          <div
+            className="flex-grow overflow-y-auto mb-4 text-black"
+            style={{ maxHeight: "300px" }}
+          >
             <h2 className="text-md text-center text-black font-bold mb-1">
               AI CHAT
             </h2>
