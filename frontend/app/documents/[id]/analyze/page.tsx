@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import API from "../../../../lib/api";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Button from "../../../components/Button";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
@@ -24,8 +24,36 @@ export default function AnalyzePage() {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat (for auto-scroll)
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this document?"
+    );
+    if (!confirmed) return;
+
+    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${id}`;
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(backendUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        alert("Document deleted successfully");
+        router.push("/documents");
+      } else {
+        throw new Error("Failed to delete the document");
+      }
+    } catch (err) {
+      console.error("Error deleting document:", err);
+      alert("Error deleting document.");
+    }
+  };
 
   useEffect(() => {
     const fetchDocumentAndInteractions = async () => {
@@ -122,6 +150,12 @@ export default function AnalyzePage() {
           </TransformWrapper>
         </div>
         <div className="flex justify-between mt-2">
+          <button
+            onClick={handleDelete}
+            className="text-red-500 text-3xl hover:text-red-700"
+          >
+            ✖
+          </button>
           <Button
             className="text-blue-500"
             onClick={() => {
@@ -129,14 +163,6 @@ export default function AnalyzePage() {
             }}
           >
             Download
-          </Button>
-          <Button
-            className="text-red-500"
-            onClick={() => {
-              /* delete */
-            }}
-          >
-            Delete
           </Button>
         </div>
       </div>

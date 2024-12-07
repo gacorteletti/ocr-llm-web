@@ -27,13 +27,13 @@ import { HttpException, HttpStatus } from '@nestjs/common';
       }),
 
       fileFilter: (req, file, callback) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const allowedTypes = ['image/png']; // tesseract was having issues with the others
         if (allowedTypes.includes(file.mimetype)) {
           callback(null, true);
         } else {
           callback(
             new HttpException(
-              'Invalid file type. Only JPEG, JPG and PNG image files are allowed.',
+              'Invalid file type. Only PNG image files are allowed.',
               HttpStatus.BAD_REQUEST,
             ),
             false,
