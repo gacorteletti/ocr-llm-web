@@ -92,7 +92,7 @@ export class DocumentService {
       );
     }
 
-    const prompt = `Analyze the following text:\n\n"${document.extractedText}"\n\nQuery: ${query}`;
+    const prompt = `Consider this text:\n\n"${document.extractedText}"\n\nNow humanly answer this: ${query}`;
     const response = await this.llm.analyzeText(prompt);
 
     // Log the interaction in the database
