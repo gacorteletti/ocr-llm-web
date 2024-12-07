@@ -13,11 +13,16 @@ interface Document {
   url: string;
 }
 
+interface Message {
+  role: "user" | "ai";
+  content: string;
+}
+
 export default function AnalyzePage() {
   const { id } = useParams(); // fetch doc ID from URL path
   const [document, setDocument] = useState<Document | null>(null);
   const [query, setQuery] = useState("");
-  const [response, setResponse] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,6 +45,12 @@ export default function AnalyzePage() {
 
   const handleQuerySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!query.trim()) return; // if query empty, skip it
+
+    const newMessage: Message = { role: "user", content: query }; // obtain new query
+    setMessages((prev) => [...prev, newMessage]); // append to chat
+
     setLoading(true);
 
     try {
@@ -52,7 +63,8 @@ export default function AnalyzePage() {
           },
         }
       );
-      setResponse(result.data.response);
+      const aiResponse: Message = { role: "ai", content: result.data.response }; // obtain reply
+      setMessages((prev) => [...prev, aiResponse]); // append to chat
     } catch (error) {
       console.error("Error analyzing document:", error);
     } finally {
@@ -103,7 +115,7 @@ export default function AnalyzePage() {
       <div className="col-span-2 flex flex-col space-y-2">
         {/* text */}
         <div className="mb-2 p-4 bg-white shadow-md rounded">
-          <h2 className="text-MD text-center text-black font-bold mb-1">
+          <h2 className="text-md text-center text-black font-bold mb-1">
             EXTRACTED TEXT
           </h2>
           <div
@@ -120,8 +132,20 @@ export default function AnalyzePage() {
             <h2 className="text-md text-center text-black font-bold mb-1">
               AI CHAT
             </h2>
-            {/* placeholder for chat messages */}
-            <p>AI Chat messages will go here...</p>
+            <div className="space-y-2">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`p-2 rounded ${
+                    message.role === "user"
+                      ? "bg-gray-200 text-right"
+                      : "bg-blue-200 text-left"
+                  }`}
+                >
+                  {message.content}
+                </div>
+              ))}
+            </div>
           </div>
           <form onSubmit={handleQuerySubmit} className="flex">
             <textarea
