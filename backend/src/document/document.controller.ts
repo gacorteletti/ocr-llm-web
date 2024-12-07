@@ -26,6 +26,11 @@ import * as fs from 'fs/promises';
 export class DocumentController {
   constructor(private documentService: DocumentService) {}
 
+  @Get() // .../documents for grid of user's documents
+  async getUserDocuments(@GetUser() user: User) {
+    return this.documentService.getDocumentsByUser(user.id);
+  }
+
   @Get(':id')
   async getDocumentById(@Param('id') id: string, @GetUser() user: User) {
     const document = await this.documentService.getDocumentByIdAndUser(
@@ -38,6 +43,45 @@ export class DocumentController {
     }
 
     return document;
+  }
+
+  @Get('download/:id')
+  async downloadDocument(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @GetUser() user: User,
+  ) {
+    const document = await this.documentService.getDocumentByIdAndUser(
+      parseInt(id, 10),
+      user.id,
+    );
+
+    if (!document) {
+      throw new UnauthorizedException('Access denied.');
+    }
+
+    const filePath = join(process.cwd(), document.path);
+    return res.download(filePath, document.filename); // triggers file download
+  }
+
+  @Get(':id/interactions')
+  async getDocumentInteractions(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ) {
+    const document = await this.documentService.getDocumentByIdAndUser(
+      parseInt(id, 10),
+      user.id,
+    );
+
+    if (!document) {
+      throw new UnauthorizedException('Access denied.');
+    }
+
+    const interactions = await this.documentService.getInteractionsByDocumentId(
+      parseInt(id, 10),
+    );
+    return interactions;
   }
 
   @Delete(':id')
@@ -67,30 +111,6 @@ export class DocumentController {
 
     await this.documentService.deleteDocumentById(parseInt(id, 10));
     return { message: 'Document deleted successfully.' };
-  }
-
-  @Get('download/:id')
-  async downloadDocument(
-    @Param('id') id: string,
-    @Res() res: Response,
-    @GetUser() user: User,
-  ) {
-    const document = await this.documentService.getDocumentByIdAndUser(
-      parseInt(id, 10),
-      user.id,
-    );
-
-    if (!document) {
-      throw new UnauthorizedException('Access denied.');
-    }
-
-    const filePath = join(process.cwd(), document.path);
-    return res.download(filePath, document.filename); // triggers file download
-  }
-
-  @Get() // .../documents for grid of user's documents
-  async getUserDocuments(@GetUser() user: User) {
-    return this.documentService.getDocumentsByUser(user.id);
   }
 
   @Post('upload')

@@ -13,6 +13,19 @@ export class DocumentService {
     private config: ConfigService,
   ) {}
 
+  async getInteractionsByDocumentId(documentId: number) {
+    return this.prisma.interaction.findMany({
+      where: { documentId },
+      orderBy: { id: 'asc' },
+      select: {
+        id: true,
+        query: true,
+        response: true,
+        createdAt: true,
+      },
+    });
+  }
+
   async deleteDocumentById(id: number) {
     return this.prisma.document.delete({
       where: { id },

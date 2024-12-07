@@ -26,21 +26,40 @@ export default function AnalyzePage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchDocument = async () => {
+    const fetchDocumentAndInteractions = async () => {
       try {
-        const result = await API.get(`/documents/${id}`, {
+        // Get document
+        const docResult = await API.get(`/documents/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setDocument(result.data);
+        setDocument(docResult.data);
+
+        // Get interactions with this document
+        const interactionsResult = await API.get(
+          `/documents/${id}/interactions`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        // Fetches message history
+        const fetchedMessages = interactionsResult.data.flatMap(
+          (interaction: any) => [
+            { role: "user", content: interaction.query },
+            { role: "ai", content: interaction.response },
+          ]
+        );
+        setMessages(fetchedMessages);
       } catch (error) {
         console.error("Error fetching document:", error);
       }
     };
 
-    fetchDocument();
-    console.log("Document ID:", id);
+    fetchDocumentAndInteractions();
   }, [id]);
 
   const handleQuerySubmit = async (e: React.FormEvent) => {
