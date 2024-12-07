@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import API from "../../../../lib/api";
 import { useParams } from "next/navigation";
 import Button from "../../../components/Button";
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 interface Document {
   id: number;
   filename: string;
   extractedText: string;
+  url: string;
 }
 
 export default function AnalyzePage() {
@@ -63,29 +65,77 @@ export default function AnalyzePage() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">{document.filename}</h1>
-      <div className="mb-4 p-4 bg-gray-100 rounded">
-        <h2 className="text-lg font-semibold mb-2">Extracted Text:</h2>
-        <p className="text-gray-700">{document.extractedText}</p>
-      </div>
-      <form onSubmit={handleQuerySubmit} className="mb-4">
-        <textarea
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full border border-gray-300 rounded p-2 mb-2"
-          placeholder="Type your query here..."
-        />
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Processing..." : "Ask AI"}
-        </Button>
-      </form>
-      {response && (
-        <div className="p-4 bg-blue-100 rounded">
-          <h2 className="text-lg font-semibold mb-2">AI Response:</h2>
-          <p className="text-gray-700">{response}</p>
+    <div className="grid grid-cols-3 gap-4 h-screen p-4">
+      {/* left panel: image */}
+      <div className="col-span-1 flex flex-col bg-white shadow-md p-4 rounded">
+        <div className="flex-grow overflow-hidden cursor-move">
+          <TransformWrapper>
+            <TransformComponent>
+              <img
+                src={document.url}
+                alt={document.filename}
+                className="w-full h-full object-contain"
+              />
+            </TransformComponent>
+          </TransformWrapper>
         </div>
-      )}
+        <div className="flex justify-between mt-2">
+          <Button
+            className="text-blue-500"
+            onClick={() => {
+              /* download */
+            }}
+          >
+            Download
+          </Button>
+          <Button
+            className="text-red-500"
+            onClick={() => {
+              /* delete */
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+
+      {/* right panel: text and ai */}
+      <div className="col-span-2 flex flex-col space-y-2">
+        {/* text */}
+        <div className="mb-2 p-4 bg-white shadow-md rounded">
+          <h2 className="text-MD text-center text-black font-bold mb-1">
+            EXTRACTED TEXT
+          </h2>
+          <div
+            className="text-black overflow-y-scroll"
+            style={{ maxHeight: "150px" }}
+          >
+            {document.extractedText}
+          </div>
+        </div>
+
+        {/* ai */}
+        <div className="flex-grow flex flex-col bg-white shadow-md rounded p-4">
+          <div className="flex-grow overflow-y-auto mb-4 text-black">
+            <h2 className="text-md text-center text-black font-bold mb-1">
+              AI CHAT
+            </h2>
+            {/* placeholder for chat messages */}
+            <p>AI Chat messages will go here...</p>
+          </div>
+          <form onSubmit={handleQuerySubmit} className="flex">
+            <textarea
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-grow border border-gray-600 rounded p-2 mr-2 text-black placeholder-gray-600"
+              placeholder="Type your query here..."
+            />
+            <Button type="submit" disabled={loading}>
+              {loading ? "Processing..." : "Send"}
+            </Button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

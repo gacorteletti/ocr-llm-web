@@ -20,9 +20,21 @@ export class DocumentService {
   }
 
   async getDocumentByIdAndUser(id: number, userId: number) {
-    return this.prisma.document.findFirst({
+    const document = await this.prisma.document.findFirst({
       where: { id, userId },
+      select: {
+        id: true,
+        filename: true,
+        path: true,
+        createdAt: true,
+        extractedText: true,
+      },
     });
+    const BE_url = this.config.get('BACKEND_URL');
+    return {
+      ...document,
+      url: `${BE_url}/uploads/${document.filename}`,
+    };
   }
 
   async getDocumentsByUser(userId: number) {
