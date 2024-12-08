@@ -24,6 +24,7 @@ export default function AnalyzePage() {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat (for auto-scroll)
 
@@ -110,8 +111,12 @@ export default function AnalyzePage() {
           ]
         );
         setMessages(fetchedMessages);
-      } catch (error) {
-        console.error("Error fetching document:", error);
+      } catch (err: any) {
+        setError("Unauthorized Access");
+        setTimeout(() => {
+          router.push("/documents"); // 3s to redirect
+        }, 300);
+        setLoading(false);
       }
     };
 
@@ -156,8 +161,24 @@ export default function AnalyzePage() {
     }
   };
 
+  if (loading) {
+    return (
+      <p className="text-center text-gray-500 mt-20">
+        Loading document details...
+      </p>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-96 p-6 bg-red-100 mt-40 mx-auto shadow-lg rounded-lg">
+        <h1 className="text-2xl text-center font-bold text-red-700">{error}</h1>
+      </div>
+    );
+  }
+
   if (!doc) {
-    return <p>Loading document details...</p>;
+    return null; // fallback
   }
 
   return (

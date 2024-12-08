@@ -46,7 +46,11 @@ export default function DocumentsPage() {
   };
 
   if (error) {
-    return <p className="text-red-500">{error}</p>;
+    return (
+      <div className="w-96 p-6 bg-red-100 mt-40 mx-auto shadow-lg rounded-lg">
+        <h1 className="text-2xl text-center font-bold text-red-700">{error}</h1>
+      </div>
+    );
   }
 
   return (
