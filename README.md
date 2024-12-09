@@ -50,9 +50,10 @@ cd ocr-llm-web
 docker ps
 ```
 
-> NOTE 1: If you prefer, you can use another platform for setting up the local database. In that case, be sure to setup it using the proper configurations and credentials as shown in the file `docker-compose.yml`.
+> [!WARNING]
+> Since it is not possible to upload a valid API key for the OpenAI model used here, the one present in `ocr-llm-web\backend\.env` as `OPENAI_API_KEY` is just a placeholder. The real one has been sent to the hiring team when this project was submited. Copy and paste it on the field `OPENAI_API_KEY` at `ocr-llm-web\backend\.env` before proceeding.
 
-> NOTE 2: since this is a project for evaluation, the `.env` files are available here. So if you follow the above docker setup, you don't need to modify anything. If you used other tool, once again, pay attation to the configuration to match `.env`, otherwise you can also adapt it to your preferences.
+> NOTE 1: If you prefer, you can use another platform for setting up the local database. In that case, be sure to setup it using the proper configurations and credentials as shown in the file `docker-compose.yml`.
 
 #### $\rightarrow$ 4. Backend Setup
 
