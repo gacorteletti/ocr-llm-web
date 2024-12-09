@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL, // backend url
+  baseURL: process.env.BACKEND_URL, // backend url
 });
 
 // interceptor to handle 401 errors (unauthorized) globally

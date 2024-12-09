@@ -8,7 +8,7 @@ export class LlmService {
 
   constructor(private config: ConfigService) {
     this.openai = new OpenAI({
-      apiKey: this.config.get('OPENAI_API_KEY'),
+      apiKey: process.env.OPENAI_API_KEY,
     });
   }
 

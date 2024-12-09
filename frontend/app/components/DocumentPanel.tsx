@@ -25,7 +25,7 @@ export default function DocumentPanel({
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation(); // prevent triggering the analyze logic
 
-    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/download/${id}`;
+    const backendUrl = `${process.env.BACKEND_URL}/documents/download/${id}`;
     const token = localStorage.getItem("token");
 
     try {
@@ -58,7 +58,7 @@ export default function DocumentPanel({
     );
     if (!confirmed) return;
 
-    const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/documents/${id}`;
+    const backendUrl = `${process.env.BACKEND_URL}/documents/${id}`;
     const token = localStorage.getItem("token");
 
     try {

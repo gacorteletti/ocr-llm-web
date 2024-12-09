@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { OcrProcessingService } from '../ocr-processing/ocr-processing.service';
 import { LlmService } from '../llm/llm.service';
-import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as AdmZip from 'adm-zip';
@@ -13,7 +12,6 @@ export class DocumentService {
     private prisma: PrismaService,
     private ocrProcessing: OcrProcessingService,
     private llm: LlmService,
-    private config: ConfigService,
   ) {}
 
   async createDocumentZip(documentId: number): Promise<Buffer> {
@@ -101,7 +99,7 @@ export class DocumentService {
         extractedText: true,
       },
     });
-    const BE_url = this.config.get('BACKEND_URL');
+    const BE_url = process.env.BACKEND_URL;
     return {
       ...document,
       url: `${BE_url}/uploads/${document.filename}`,
@@ -120,7 +118,7 @@ export class DocumentService {
       },
     });
     // append file url for frontend visualization
-    const BE_url = this.config.get('BACKEND_URL');
+    const BE_url = process.env.BACKEND_URL;
     return documents.map((doc) => ({
       ...doc,
       url: `${BE_url}/uploads/${doc.filename}`,
