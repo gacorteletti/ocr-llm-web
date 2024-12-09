@@ -19,6 +19,6 @@ async function bootstrap() {
   // Serve files from the uploads directory
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
-  await app.listen(process.env.PORT ?? 3333);
+  await app.listen(3333);
 }
 bootstrap();
