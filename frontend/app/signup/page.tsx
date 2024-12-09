@@ -4,7 +4,7 @@ export default function SignupPage() {
   return (
     <AuthForm
       type="signup"
-      endpoint="/auth/signup"
+      endpoint={`{${process.env.BACKEND_URL}}auth/signup`}
       redirectTo="/signin"
       linkText="Already have an account?"
       linkHref="/signin/"
