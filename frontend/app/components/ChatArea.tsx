@@ -35,23 +35,28 @@ export default function ChatArea({ id }: { id: string }) {
 
         // Fetches message history
         const fetchedMessages = interactionsResult.data.flatMap(
-          (interaction: any) => [
+          (interaction: { query: string; response: string }) => [
             { role: "user", content: interaction.query },
             { role: "ai", content: interaction.response },
           ]
         );
         setMessages(fetchedMessages);
-      } catch (err: any) {
-        setError("Unauthorized Access");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Unauthorized Access");
+        }
         setTimeout(() => {
-          router.push("/documents"); // 3s to redirect
+          router.push("/documents"); // Redirect after delay
         }, 300);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchInteractions();
-  }, [id]);
+  }, [id, router]);
 
   // Auto-scroll when messages change
   useEffect(() => {
@@ -84,8 +89,8 @@ export default function ChatArea({ id }: { id: string }) {
       );
       const aiResponse: Message = { role: "ai", content: result.data.response }; // obtain reply
       setMessages((prev) => [...prev, aiResponse]); // append to chat
-    } catch (error) {
-      console.error("Error analyzing document:", error);
+    } catch (err: unknown) {
+      console.error("Error analyzing document:", err);
     } finally {
       setLoading(false);
     }

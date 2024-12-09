@@ -34,8 +34,14 @@ export default function AuthForm({
         localStorage.setItem("token", response.data.access_token); // Save JWT for signin
       }
       router.push(redirectTo); // Redirect on success
-    } catch (err: any) {
-      setError(err.response?.data?.message || `${type} failed`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (typeof err === "object" && err !== null) {
+        setError((err as any).response?.data?.message || `${type} failed`);
+      } else {
+        setError(`${type} failed`);
+      }
     }
   };
 
